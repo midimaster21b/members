@@ -37,8 +37,18 @@ function members_enable_content_permissions() {
 		add_filter( 'members_post_error_message', 'wpautop' );
 		add_filter( 'members_post_error_message', 'shortcode_unautop' );
 		add_filter( 'members_post_error_message', 'do_shortcode' );
+
 	}
 }
+
+add_filter( 'pre_get_posts', 'members_modify_query_based_on_permissions' );
+
+function members_modify_query_based_on_permissions( $query ) {
+	/* exit(); */
+	// error_log(var_export($query, true) . "\r\n\r\n\r\n", 3, query_log.log);
+	// $query->set('year', 2014);
+}
+
 
 /**
  * Denies/Allows access to view post content depending on whether a user has permission to view the content.
