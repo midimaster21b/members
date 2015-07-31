@@ -50,7 +50,23 @@ function members_enable_content_permissions() {
 }
 
 function members_restrict_query_based_on_permissions( $where ) {
-	 $where .= "AND id NOT IN (SELECT post_id FROM cvsupwp_postmeta WHERE meta_key='_members_access_role' AND post_id NOT IN (SELECT post_id FROM cvsupwp_postmeta WHERE meta_key='_members_access_role' AND meta_value='editor'))";
+	 $where .= "AND id NOT IN (";
+	 $where .= "SELECT post_id ";
+
+	 // POST META TABLE
+	 $where .= "FROM " . 'cvsupwp_postmeta' . " ";
+	 $where .= "WHERE meta_key='_members_access_role' ";
+	 $where .= "AND post_id NOT IN (";
+	 $where .= "SELECT post_id ";
+
+	 // POST META TABLE
+	 $where .= "FROM " . 'cvsupwp_postmeta' . " ";
+	 $where .= "WHERE meta_key='_members_access_role' ";
+
+	 // ROLE
+	 $where .= "AND meta_value='" . 'NOTAROLE' . "'";
+	 $where .= "))";
+
 	 return $where;
 }
 
