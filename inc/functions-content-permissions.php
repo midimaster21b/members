@@ -24,6 +24,9 @@ function members_enable_content_permissions() {
 	// Only add filters if the content permissions feature is enabled and we're not in the admin.
 	if ( members_content_permissions_enabled() && !is_admin() ) {
 
+		// Filter queried posts
+		add_filter( 'posts_where', members_restrict_query_based_on_permissions );
+
 		// Filter the content and exerpts.
 		add_filter( 'the_content',      'members_content_permissions_protect', 95 );
 		add_filter( 'get_the_excerpt',  'members_content_permissions_protect', 95 );
@@ -50,9 +53,6 @@ function members_restrict_query_based_on_permissions( $where ) {
 	 $where .= "AND id NOT IN (SELECT post_id FROM cvsupwp_postmeta WHERE meta_key='_members_access_role' AND post_id NOT IN (SELECT post_id FROM cvsupwp_postmeta WHERE meta_key='_members_access_role' AND meta_value='editor'))";
 	 return $where;
 }
-
-/* Filter queried posts */
-add_filter( 'posts_where', members_restrict_query_based_on_permissions );
 
 /**
  * Denies/Allows access to view post content depending on whether a user has permission to
