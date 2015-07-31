@@ -50,22 +50,35 @@ function members_enable_content_permissions() {
 }
 
 function members_restrict_query_based_on_permissions( $where ) {
-	 $where .= "AND id NOT IN (";
-	 $where .= "SELECT post_id ";
 
-	 // POST META TABLE
-	 $where .= "FROM " . 'cvsupwp_postmeta' . " ";
-	 $where .= "WHERE meta_key='_members_access_role' ";
-	 $where .= "AND post_id NOT IN (";
-	 $where .= "SELECT post_id ";
+	 // If user is logged in, use long form
+	 if ( is_user_logged_in() ) {
+	    $where .= "AND id NOT IN (";
+	    $where .= "SELECT post_id ";
 
-	 // POST META TABLE
-	 $where .= "FROM " . 'cvsupwp_postmeta' . " ";
-	 $where .= "WHERE meta_key='_members_access_role' ";
+	    // POST META TABLE
+	    $where .= "FROM " . 'cvsupwp_postmeta' . " ";
+	    $where .= "WHERE meta_key='_members_access_role' ";
+	    $where .= "AND post_id NOT IN (";
+	    $where .= "SELECT post_id ";
 
-	 // ROLE
-	 $where .= "AND meta_value='" . 'NOTAROLE' . "'";
-	 $where .= "))";
+	    // POST META TABLE
+	    $where .= "FROM " . 'cvsupwp_postmeta' . " ";
+	    $where .= "WHERE meta_key='_members_access_role' ";
+
+	    // ROLE
+	    $where .= "AND meta_value='" . 'NOTAROLE' . "'";
+	    $where .= "))";
+	 }
+
+	 // Else use shortened form
+	 else {
+	      $where .= "AND id NOT IN (";
+	      $where .= "SELECT post_id ";
+	      $where .= "FROM " . cvsupwp_postmeta . " ";
+	      $where .= "WHERE meta_key='_members_access_role')";
+	 }
+
 
 	 return $where;
 }
