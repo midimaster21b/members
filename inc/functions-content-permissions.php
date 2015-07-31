@@ -46,6 +46,14 @@ function members_enable_content_permissions() {
 	}
 }
 
+function members_restrict_query_based_on_permissions( $where ) {
+	 $where .= "AND id NOT IN (SELECT post_id FROM cvsupwp_postmeta WHERE meta_key='_members_access_role' AND post_id NOT IN (SELECT post_id FROM cvsupwp_postmeta WHERE meta_key='_members_access_role' AND meta_value='editor'))";
+	 return $where;
+}
+
+/* Filter queried posts */
+add_filter( 'posts_where', members_restrict_query_based_on_permissions );
+
 /**
  * Denies/Allows access to view post content depending on whether a user has permission to
  * view the content.
