@@ -54,6 +54,8 @@ function members_restrict_query_based_on_permissions( $where ) {
 
 	 $postmeta_table = $wpdb->postmeta;
 
+	 // SHOULD CHECK FOR restrict_content CAPABILITY
+	 // SHOULD CHECK IF ADMIN USER?
 	 // If user is logged in, use long form
 	 if ( is_user_logged_in() ) {
 	    $where .= "AND id NOT IN (";
@@ -70,8 +72,21 @@ function members_restrict_query_based_on_permissions( $where ) {
 	    $where .= "WHERE meta_key='_members_access_role' ";
 
 	    // ROLE
-	    $where .= "AND meta_value='" . 'NOTAROLE' . "'";
-	    $where .= "))";
+	    $where .= "AND meta_value IN (";
+
+	    // ROLES (comma separated surrounded by single quotes)
+	    // DO NOT FORGET TO CHANGE THIS TO CORRECT STYLE LATER!!!!
+	    // ROLES CANT CONTAIN SINGLE QUOTATION MARKS
+	    foreach ( members_get_user_role_names( get_current_user_id() ) as $role_name=>$role_object ) {
+		    $where .= "'$role_name',";
+	    }
+
+	    // Remove last comma
+	    // THIS IMPLEMENTATION IS TERRIBLE, PLEASE REFACTOR
+	    $where = rtrim($where, ',');
+
+
+	    $where .= ")))";
 	 }
 
 	 // Else use shortened form
