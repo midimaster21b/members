@@ -104,4 +104,27 @@ function members_can_current_user_view_post( $post_id = '' ) {
 	return members_can_user_view_post( $current_user->ID, $post_id );
 }
 
+/**
+ * Function to remove posts from a query for posts that are restricted to the currently logged-in user.
+ *
+ * @since |latest version| <--- CHANGE THIS
+ * @param post array $posts An array of posts
+ * @param WP_Query WP_Query An instance of WP_Query passed by reference
+ * @return post array of filtered posts
+ */
+function members_filter_posts($posts, $WP_Query=NULL) {
+	 foreach($posts as $key=>$post) {
+		if(!members_can_current_user_view_post($post->ID)) {
+			unset($posts[$key]);
+		}
+	}
+
+	// Shift array to account for offset created by any unset values
+	$posts = array_values($posts);
+
+	return $posts;
+}
+
+add_filter('the_posts', 'members_filter_posts');
+
 ?>
