@@ -50,6 +50,9 @@ function members_enable_content_permissions() {
 }
 
 function members_restrict_query_based_on_permissions( $where ) {
+	 global $wpdb;
+
+	 $postmeta_table = $wpdb->postmeta;
 
 	 // If user is logged in, use long form
 	 if ( is_user_logged_in() ) {
@@ -57,13 +60,13 @@ function members_restrict_query_based_on_permissions( $where ) {
 	    $where .= "SELECT post_id ";
 
 	    // POST META TABLE
-	    $where .= "FROM " . 'cvsupwp_postmeta' . " ";
+	    $where .= "FROM " . $postmeta_table . " ";
 	    $where .= "WHERE meta_key='_members_access_role' ";
 	    $where .= "AND post_id NOT IN (";
 	    $where .= "SELECT post_id ";
 
 	    // POST META TABLE
-	    $where .= "FROM " . 'cvsupwp_postmeta' . " ";
+	    $where .= "FROM " . $postmeta_table . " ";
 	    $where .= "WHERE meta_key='_members_access_role' ";
 
 	    // ROLE
@@ -75,7 +78,7 @@ function members_restrict_query_based_on_permissions( $where ) {
 	 else {
 	      $where .= "AND id NOT IN (";
 	      $where .= "SELECT post_id ";
-	      $where .= "FROM " . cvsupwp_postmeta . " ";
+	      $where .= "FROM " . $postmeta_table . " ";
 	      $where .= "WHERE meta_key='_members_access_role')";
 	 }
 
