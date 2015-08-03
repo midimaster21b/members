@@ -101,6 +101,21 @@ function members_restrict_query_based_on_permissions( $where ) {
 	 return $where;
 }
 
+// THIS METHOD IS SLOW AND A BETTER METHOD SHOULD BE SOUGHT
+// NOTE: this method is called 3 different times within the definition of get_terms() in
+// wp-includes/taxonomy.php definition and this function only needs to run once.
+function members_filter_tax_query($cache, $taxonomies=NULL, $args=NULL) {
+
+	 // Iterate through all taxonomies and adjust the count
+	 // based on the user's current restrictions.
+	 foreach ( $cache as $taxonomy ) {
+		 $args = array( 'category' => $taxonomy->term_id );
+		 $taxonomy->count = count( get_posts( $args ) );
+	 }
+
+	 return $cache;
+}
+
 /**
  * Denies/Allows access to view post content depending on whether a user has permission to
  * view the content.
