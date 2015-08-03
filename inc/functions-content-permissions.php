@@ -27,6 +27,9 @@ function members_enable_content_permissions() {
 		// Filter queried posts
 		add_filter( 'posts_where', members_restrict_query_based_on_permissions );
 
+		// Filter queried taxonomies
+		add_filter( 'get_terms', members_filter_tax_query );
+
 		// Filter the content and exerpts.
 		add_filter( 'the_content',      'members_content_permissions_protect', 95 );
 		add_filter( 'get_the_excerpt',  'members_content_permissions_protect', 95 );
