@@ -55,48 +55,57 @@ function members_enable_content_permissions() {
 	}
 }
 
+/**
+ * Filters the results of get_posts() to reflect the currently logged in user's permissions.
+ *
+ * @note   Roles cannot contain single quotation marks
+ * @note   Due to this function, all WP_Query objects created once this hook is active will only contain posts that the currently logged in user has permission to view
+ * @todo   Allow roles to contain single quotation marks (Escape all sql?)
+ * @todo   Protect code from SQL injection
+ * @todo   Check for restrict_content capability
+ * @todo   Check if currently logged in user is admin
+ * @todo   This implementation is terrible, please refactor (can we get rid of rtrim?)
+ * @todo   Do not forget to change this to correct style later!!!!
+ *
+ * @since  LATEST_DEVELOPMENT
+ * @param  string $where
+ * @return string
+ */
 function members_restrict_query_based_on_permissions( $where ) {
 	 global $wpdb;
 
+	 // Get postmeta table name
 	 $postmeta_table = $wpdb->postmeta;
 
-	 // SHOULD CHECK FOR restrict_content CAPABILITY
-	 // SHOULD CHECK IF ADMIN USER?
-	 // If user is logged in, use long form
+	 // If user is logged in, use long form of SQL
 	 if ( is_user_logged_in() ) {
+
+	    // Exclude posts that have been limited to certain roles, but none of those
+	    // certain roles include the current user's role(s)
 	    $where .= "AND id NOT IN (";
 	    $where .= "SELECT post_id ";
-
-	    // POST META TABLE
 	    $where .= "FROM " . $postmeta_table . " ";
 	    $where .= "WHERE meta_key='_members_access_role' ";
 	    $where .= "AND post_id NOT IN (";
 	    $where .= "SELECT post_id ";
-
-	    // POST META TABLE
 	    $where .= "FROM " . $postmeta_table . " ";
 	    $where .= "WHERE meta_key='_members_access_role' ";
-
-	    // ROLE
 	    $where .= "AND meta_value IN (";
 
-	    // ROLES (comma separated surrounded by single quotes)
-	    // DO NOT FORGET TO CHANGE THIS TO CORRECT STYLE LATER!!!!
-	    // ROLES CANT CONTAIN SINGLE QUOTATION MARKS
+	    // Print roles as comma separated values surrounded by single quotes
 	    foreach ( members_get_user_role_names( get_current_user_id() ) as $role_name=>$role_object ) {
 		    $where .= "'$role_name',";
 	    }
 
 	    // Remove last comma
-	    // THIS IMPLEMENTATION IS TERRIBLE, PLEASE REFACTOR
 	    $where = rtrim($where, ',');
-
 
 	    $where .= ")))";
 	 }
 
-	 // Else use shortened form
+	 // Else use shortened form of SQL
 	 else {
+	      // Exclude posts that have been limited to certain roles
 	      $where .= "AND id NOT IN (";
 	      $where .= "SELECT post_id ";
 	      $where .= "FROM " . $postmeta_table . " ";
@@ -107,10 +116,17 @@ function members_restrict_query_based_on_permissions( $where ) {
 	 return $where;
 }
 
-// THIS METHOD IS SLOW AND A BETTER METHOD SHOULD BE SOUGHT
-// NOTE: this method is called 3 different times within the definition of get_terms() in
-// wp-includes/taxonomy.php definition and this function only needs to run once.
-// NOTE: Variable names should be changed to more appropriate names
+/**
+ * Filters the results of get_terms() to reflect the currently logged in user's permissions.
+ *
+ * @note   THIS METHOD IS EXTREMELY INEFFICIENT AND A BETTER METHOD SHOULD BE SOUGHT
+ * @todo   Find more efficient implementation
+ * @todo   Variable names should be changed to something more appropriate
+ *
+ * @since  LATEST_DEVELOPMENT
+ * @param  array $cache
+ * @return array
+ */
 function members_filter_tax_query($cache) {
 
 	 // Iterate through all taxonomies queried and adjust the count property
@@ -123,20 +139,24 @@ function members_filter_tax_query($cache) {
 	 return $cache;
 }
 
-// Modify the results of the wp_count_posts() function to line up
-// with the content that the currently logged in user is able to view.
-// All posts not available to the currently logged in user are moved to
-// the "hidden" count in $counts.
+/**
+ * Filter the results of wp_count_posts() to reflect the currently logged in user's permissions.
+ *
+ * @note   All posts not available to the currently logged in user are moved to the "hidden" key in $counts
+ *
+ * @since  LATEST_DEVELOPMENT
+ * @param  stdClass $counts
+ * @param  string   $type
+ * @return stdClass
+ */
 function members_filter_count_posts($counts, $type) {
-	 // Create a query with all the posts of the type specified
-	 // With previously created filters this will only allow posts to
-	 // to be included that are available to the currently logged in user
+	 // Create a WP_Query object with all the posts of the post_type specified
 	 $query =  new WP_Query( array( 'post_type' => $type ) );
 
-	 // Count all posts that are not available to the person currently as hidden posts
+	 // Count posts that are not available to the currently logged in user as hidden posts
 	 $counts->hidden = $counts->publish - $query->found_posts;
 
-	 // Update published with the filtered value
+	 // Update published count with the filtered value
 	 $counts->publish = $query->found_posts;
 
 	 return $counts;
