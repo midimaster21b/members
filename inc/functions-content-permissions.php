@@ -30,6 +30,9 @@ function members_enable_content_permissions() {
 		// Filter queried taxonomies
 		add_filter( 'get_terms', members_filter_tax_query );
 
+		// Filter post count
+		add_filter( 'wp_count_posts', members_filter_count_posts, 10, 2);
+
 		// Filter the content and exerpts.
 		add_filter( 'the_content',      'members_content_permissions_protect', 95 );
 		add_filter( 'get_the_excerpt',  'members_content_permissions_protect', 95 );
