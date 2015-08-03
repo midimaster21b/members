@@ -120,6 +120,25 @@ function members_filter_tax_query($cache) {
 	 return $cache;
 }
 
+// Modify the results of the wp_count_posts() function to line up
+// with the content that the currently logged in user is able to view.
+// All posts not available to the currently logged in user are moved to
+// the "hidden" count in $counts.
+function members_filter_count_posts($counts, $type) {
+	 // Create a query with all the posts of the type specified
+	 // With previously created filters this will only allow posts to
+	 // to be included that are available to the currently logged in user
+	 $query =  new WP_Query( array( 'post_type' => $type ) );
+
+	 // Count all posts that are not available to the person currently as hidden posts
+	 $counts->hidden = $counts->publish - $query->found_posts;
+
+	 // Update published with the filtered value
+	 $counts->publish = $query->found_posts;
+
+	 return $counts;
+}
+
 /**
  * Denies/Allows access to view post content depending on whether a user has permission to
  * view the content.
