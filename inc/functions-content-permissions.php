@@ -65,7 +65,6 @@ function members_enable_content_permissions() {
  * @todo   Check for restrict_content capability
  * @todo   Check if currently logged in user is admin
  * @todo   This implementation is terrible, please refactor (can we get rid of rtrim?)
- * @todo   Do not forget to change this to correct style later!!!!
  *
  * @since  LATEST_DEVELOPMENT
  * @param  string $where
