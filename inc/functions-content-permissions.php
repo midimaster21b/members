@@ -141,7 +141,7 @@ function members_filter_tax_query($cache) {
 /**
  * Filter the results of wp_count_posts() to reflect the currently logged in user's permissions.
  *
- * @note   All posts not available to the currently logged in user are moved to the "hidden" key in $counts
+ * @note   The number of posts not available to the currently logged in user are moved to the "hidden" key in $counts
  *
  * @since  LATEST_DEVELOPMENT
  * @param  stdClass $counts
