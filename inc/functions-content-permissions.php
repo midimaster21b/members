@@ -74,9 +74,11 @@ function members_restrict_query_based_on_permissions( $where ) {
 	 // If user is logged in, use long form of SQL
 	 if ( is_user_logged_in() ) {
 
+	    $roles = array_keys( members_get_user_role_names( get_current_user_id() ) );
+
 	    // If user has 'restrict_content' capabaility, don't restrict results
-	    foreach ( members_get_user_role_names( get_current_user_id() ) as $role_name => $role_object ) {
-		    $role_object = new Members_Role( $role_name );
+	    foreach ( $roles as $role ) {
+		    $role_object = new Members_Role( $role );
 		    $role_caps = $role_object->granted_caps;
 
 		    if ( in_array( 'restrict_content', $role_caps ) ) {
@@ -98,8 +100,8 @@ function members_restrict_query_based_on_permissions( $where ) {
 	    $where .= "AND meta_value IN (";
 
 	    // Print roles as comma separated values surrounded by single quotes
-	    foreach ( members_get_user_role_names( get_current_user_id() ) as $role_name => $role_object ) {
-		    $where .= "'$role_name',";
+	    foreach ( $roles as $role ) {
+		    $where .= "'$role',";
 	    }
 
 	    // Remove last comma
