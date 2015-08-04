@@ -63,6 +63,7 @@ function members_enable_content_permissions() {
  *
  * @since  LATEST_DEVELOPMENT
  * @param  string $where
+ * @global object $wpdb
  * @return string
  */
 function members_restrict_query_based_on_permissions( $where ) {
@@ -151,9 +152,9 @@ function members_filter_tax_query($cache) {
  * @note   The number of posts not available to the currently logged in user are moved to the "hidden" key in $counts
  *
  * @since  LATEST_DEVELOPMENT
- * @param  stdClass $counts
- * @param  string   $type
- * @return stdClass
+ * @param  object $counts
+ * @param  string $type
+ * @return object
  */
 function members_filter_count_posts($counts, $type) {
 	 // Create a WP_Query object with all the posts of the post_type specified
