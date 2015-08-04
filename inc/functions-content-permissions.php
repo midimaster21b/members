@@ -25,13 +25,13 @@ function members_enable_content_permissions() {
 	if ( members_content_permissions_enabled() && !is_admin() ) {
 
 		// Filter queried posts
-		add_filter( 'posts_where', members_restrict_query_based_on_permissions );
+		add_filter( 'posts_where', 'members_restrict_query_based_on_permissions', 10, 1 );
 
 		// Filter queried taxonomies
-		add_filter( 'get_terms', members_filter_tax_query );
+		add_filter( 'get_terms', 'members_filter_tax_query', 10, 1 );
 
 		// Filter post count
-		add_filter( 'wp_count_posts', members_filter_count_posts, 10, 2);
+		add_filter( 'wp_count_posts', 'members_filter_count_posts', 10, 2);
 
 		// Filter the content and exerpts.
 		add_filter( 'the_content',      'members_content_permissions_protect', 95 );
@@ -93,12 +93,12 @@ function members_restrict_query_based_on_permissions( $where ) {
 	    $where .= "AND meta_value IN (";
 
 	    // Print roles as comma separated values surrounded by single quotes
-	    foreach ( members_get_user_role_names( get_current_user_id() ) as $role_name=>$role_object ) {
+	    foreach ( members_get_user_role_names( get_current_user_id() ) as $role_name => $role_object ) {
 		    $where .= "'$role_name',";
 	    }
 
 	    // Remove last comma
-	    $where = rtrim($where, ',');
+	    $where = rtrim( $where, ',' );
 
 	    $where .= ")))";
 	 }
@@ -111,7 +111,6 @@ function members_restrict_query_based_on_permissions( $where ) {
 	      $where .= "FROM " . $postmeta_table . " ";
 	      $where .= "WHERE meta_key='_members_access_role')";
 	 }
-
 
 	 return $where;
 }
