@@ -60,7 +60,6 @@ function members_enable_content_permissions() {
  *
  * @note   Due to this function, all WP_Query objects created once this hook is active will only contain posts that the currently logged in user has permission to view
  * @todo   Protect code from SQL injection
- * @todo   Check for restrict_content capability
  *
  * @since  LATEST_DEVELOPMENT
  * @param  string $where
@@ -74,6 +73,17 @@ function members_restrict_query_based_on_permissions( $where ) {
 
 	 // If user is logged in, use long form of SQL
 	 if ( is_user_logged_in() ) {
+
+	    // If user has 'restrict_content' capabaility, don't restrict results
+	    foreach ( members_get_user_role_names( get_current_user_id() ) as $role_name => $role_object ) {
+		    $role_object = new Members_Role( $role_name );
+		    $role_caps = $role_object->granted_caps;
+
+		    if ( in_array( 'restrict_content', $role_caps ) ) {
+		       return $where;
+		    }
+	    }
+
 
 	    // Exclude posts that have been limited to certain roles, but none of those
 	    // certain roles include the current user's role(s)
