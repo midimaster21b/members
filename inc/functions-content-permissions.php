@@ -58,13 +58,9 @@ function members_enable_content_permissions() {
 /**
  * Filters the results of get_posts() to reflect the currently logged in user's permissions.
  *
- * @note   Roles cannot contain single quotation marks
  * @note   Due to this function, all WP_Query objects created once this hook is active will only contain posts that the currently logged in user has permission to view
- * @todo   Allow roles to contain single quotation marks (Escape all sql?)
  * @todo   Protect code from SQL injection
  * @todo   Check for restrict_content capability
- * @todo   Check if currently logged in user is admin
- * @todo   This implementation is terrible, please refactor (can we get rid of rtrim?)
  *
  * @since  LATEST_DEVELOPMENT
  * @param  string $where
