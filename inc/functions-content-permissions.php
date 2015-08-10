@@ -134,7 +134,7 @@ function members_restrict_query_based_on_permissions( $where ) {
  * @param  array $cache
  * @return array
  */
-function members_filter_tax_query($cache) {
+function members_filter_tax_query( $cache ) {
 
 	 // Iterate through all taxonomies queried, adjust the count property based on
 	 // the user's current restrictions, and remove empty taxonomies.
@@ -173,7 +173,7 @@ function members_filter_tax_query($cache) {
  * @param  string $type
  * @return object
  */
-function members_filter_count_posts($counts, $type) {
+function members_filter_count_posts( $counts, $type ) {
 	 // Create a WP_Query object with all the posts of the post_type specified
 	 $query =  new WP_Query( array( 'post_type' => $type ) );
 
