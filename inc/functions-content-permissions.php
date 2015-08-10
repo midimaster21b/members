@@ -136,11 +136,16 @@ function members_restrict_query_based_on_permissions( $where ) {
  */
 function members_filter_tax_query($cache) {
 
-	 // Iterate through all taxonomies queried and adjust the count property
-	 // based on the user's current restrictions.
-	 foreach ( $cache as $taxonomy ) {
+	 // Iterate through all taxonomies queried, adjust the count property based on
+	 // the user's current restrictions, and remove empty taxonomies.
+	 // Should the filtering of empty taxonomies be a part of this plugin?
+	 foreach ( $cache as $array_key => $taxonomy ) {
 		 $query = new WP_Query( array ( $taxonomy->taxonomy => $taxonomy->slug ) );
 		 $taxonomy->count = $query->found_posts;
+
+		 if ( $taxonomy->count == 0 ) {
+		    unset( $cache[ $array_key ] );
+		 }
 	 }
 
 	 return $cache;
