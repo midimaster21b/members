@@ -140,7 +140,19 @@ function members_filter_tax_query($cache) {
 	 // the user's current restrictions, and remove empty taxonomies.
 	 // Should the filtering of empty taxonomies be a part of this plugin?
 	 foreach ( $cache as $array_key => $taxonomy ) {
-		 $query = new WP_Query( array ( $taxonomy->taxonomy => $taxonomy->slug ) );
+	   $query = new WP_Query(
+				 array(
+				       'tax_query' =>
+				       array (
+					      array (
+						     'taxonomy' => $taxonomy->taxonomy,
+						     'field' => 'slug',
+						     'terms' => $taxonomy->slug,
+						     )
+					      )
+				       )
+				 );
+
 		 $taxonomy->count = $query->found_posts;
 
 		 if ( $taxonomy->count == 0 ) {
