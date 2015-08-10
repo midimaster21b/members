@@ -58,7 +58,7 @@ function members_enable_content_permissions() {
 /**
  * Filters the results of get_posts() to reflect the currently logged in user's permissions.
  *
- * @note   Due to this function, all WP_Query objects created once this hook is active will only contain posts that the currently logged in user has permission to view
+ * @note   Once this hook is active all WP_Query objects created will only contain posts that the currently logged in user has permission to view
  * @todo   Protect code from SQL injection
  *
  * @since  LATEST_DEVELOPMENT
