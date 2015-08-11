@@ -120,7 +120,7 @@ function members_restrict_query_based_on_permissions( $where ) {
 	      // Exclude posts that have been limited to certain roles
 	      $where .= " AND id NOT IN (";
 	      $where .= "SELECT post_id ";
-	      $where .= "FROM " . $postmeta_table . " ";
+	      $where .= "FROM $postmeta_table ";
 	      $where .= "WHERE meta_key='_members_access_role')";
 	 }
 
