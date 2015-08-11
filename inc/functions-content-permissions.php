@@ -24,14 +24,16 @@ function members_enable_content_permissions() {
 	// Only add filters if the content permissions feature is enabled and we're not in the admin.
 	if ( members_content_permissions_enabled() && !is_admin() ) {
 
-		// Filter queried posts
-		add_filter( 'posts_where', 'members_restrict_query_based_on_permissions', 10, 1 );
+	        if ( members_get_setting( 'restrict_feed' ) ) {
+		   // Filter queried posts
+		   add_filter( 'posts_where', 'members_restrict_query_based_on_permissions', 10, 1 );
 
-		// Filter queried taxonomies
-		add_filter( 'get_terms', 'members_filter_tax_query', 10, 1 );
+		   // Filter queried taxonomies
+		   add_filter( 'get_terms', 'members_filter_tax_query', 10, 1 );
 
-		// Filter post count
-		add_filter( 'wp_count_posts', 'members_filter_count_posts', 10, 2);
+		   // Filter post count
+		   add_filter( 'wp_count_posts', 'members_filter_count_posts', 10, 2);
+		}
 
 		// Filter the content and exerpts.
 		add_filter( 'the_content',      'members_content_permissions_protect', 95 );
