@@ -115,13 +115,9 @@ function members_restrict_query_based_on_permissions( $where ) {
 	    $where .= $wpdb->prepare( $temp, $roles );
 	 }
 
-	 // Else use shortened form of SQL
+	 // Else don't return any post types other than pages
 	 else {
-	      // Exclude posts that have been limited to certain roles
-	      $where .= " AND id NOT IN (";
-	      $where .= "SELECT post_id ";
-	      $where .= "FROM $postmeta_table ";
-	      $where .= "WHERE meta_key='_members_access_role')";
+	      $where .= " AND post_type='page'";
 	 }
 
 	 return $where;
@@ -139,6 +135,11 @@ function members_restrict_query_based_on_permissions( $where ) {
  * @return array
  */
 function members_filter_tax_query( $cache ) {
+
+	 // If user isn't logged in, don't return any taxonomy results
+         if ( !is_user_logged_in() ) {
+	    return array();
+	 }
 
 	 // Iterate through all taxonomies queried, adjust the count property based on
 	 // the user's current restrictions, and remove empty taxonomies.
