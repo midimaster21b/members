@@ -90,25 +90,29 @@ function members_restrict_query_based_on_permissions( $where ) {
 
 	    // Exclude posts that have been limited to certain roles, but none of those
 	    // certain roles include the current user's role(s)
-	    $where .= " AND id NOT IN (";
-	    $where .= "SELECT post_id ";
-	    $where .= "FROM " . $postmeta_table . " ";
-	    $where .= "WHERE meta_key='_members_access_role' ";
-	    $where .= "AND post_id NOT IN (";
-	    $where .= "SELECT post_id ";
-	    $where .= "FROM " . $postmeta_table . " ";
-	    $where .= "WHERE meta_key='_members_access_role' ";
-	    $where .= "AND meta_value IN (";
+	    $temp = " AND id NOT IN (";
+	    $temp .= "SELECT post_id ";
+	    $temp .= "FROM $postmeta_table ";
+	    $temp .= "WHERE meta_key='_members_access_role' ";
+	    $temp .= "AND post_id NOT IN (";
+	    $temp .= "SELECT post_id ";
+	    $temp .= "FROM $postmeta_table ";
+	    $temp .= "WHERE meta_key='_members_access_role' ";
+	    $temp .= "AND meta_value IN (";
 
 	    // Print roles as comma separated values surrounded by single quotes
 	    foreach ( $roles as $role ) {
-		    $where .= "'$role',";
+		    $temp .= "%s,";
 	    }
 
 	    // Remove last comma
-	    $where = rtrim( $where, ',' );
+	    $temp = rtrim( $temp, ',' );
 
-	    $where .= ")))";
+	    // Close out all previous parenthesis
+	    $temp .= ")))";
+
+	    // Escape/sanitize sql
+	    $where .= $wpdb->prepare( $temp, $roles );
 	 }
 
 	 // Else use shortened form of SQL
