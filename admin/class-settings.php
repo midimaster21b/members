@@ -97,6 +97,7 @@ final class Members_Settings_Page {
 
 		add_settings_field( 'enable_content_permissions', esc_html__( 'Enable Permissions', 'members' ), array( $this, 'field_enable_content_permissions' ), $this->settings_page, 'content_permissions' );
 		add_settings_field( 'content_permissions_error',  esc_html__( 'Error Message',              'members' ), array( $this, 'field_content_permissions_error'  ), $this->settings_page, 'content_permissions' );
+		add_settings_field( 'enable_feed_restriction',	  esc_html__( 'Restrict Feed',      'members' ), array( $this, 'field_enable_feed_restriction' 	  ), $this->settings_page, 'content_permissions' );
 
 		add_settings_field( 'widget_login', esc_html__( 'Login Widget', 'members' ), array( $this, 'field_widget_login' ), $this->settings_page, 'sidebar_widgets' );
 		add_settings_field( 'widget_users', esc_html__( 'Users Widget', 'members' ), array( $this, 'field_widget_users' ), $this->settings_page, 'sidebar_widgets' );
@@ -121,6 +122,7 @@ final class Members_Settings_Page {
 		$settings['role_manager']        = isset( $settings['role_manager'] )        ? true : false;
 		$settings['cap_manager']         = isset( $settings['cap_manager'] )         ? true : false;
 		$settings['content_permissions'] = isset( $settings['content_permissions'] ) ? true : false;
+		$settings['restrict_feed']	 = isset( $settings['restrict_feed'])	     ? true : false;
 		$settings['login_form_widget']   = isset( $settings['login_form_widget'] )   ? 1 : 0;
 		$settings['users_widget']        = isset( $settings['users_widget'] )        ? 1 : 0;
 		$settings['private_blog']        = isset( $settings['private_blog'] )        ? 1 : 0;
@@ -232,6 +234,16 @@ final class Members_Settings_Page {
 			)
 		);
 	}
+
+	public function field_enable_feed_restriction() { ?>
+		<p>
+			<label>
+				<input type="checkbox" name="members_settings[restrict_feed]" value="true" <?php checked( members_get_setting( 'restrict_feed' ) ); ?> />
+				<?php esc_html_e( 'Force exclusion of restricted posts and empty taxonomies from website content for users with restrictions.', 'members' ); ?>
+			</label>
+		</p>
+	<?php }
+
 
 	/**
 	 * Renders the settings page.
